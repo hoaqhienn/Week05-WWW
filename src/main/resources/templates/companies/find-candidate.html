@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Candidates</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div th:switch="${candidatePage}" class="min-h-screen p-6">
+    <!-- No candidates case -->
+    <h2 th:case="null" class="text-2xl font-bold text-gray-800 mb-4">No candidates yet!</h2>
+
+    <!-- Has candidates case -->
+    <div th:case="*" class="max-w-7xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Danh sách ứng viên phù hợp</h2>
+            <a href="/" class="text-blue-600 hover:text-blue-800 flex items-center">
+                <span class="mr-2">&#8678;</span> Trở về
+            </a>
+        </div>
+
+        <!-- Candidates Table -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">STT</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Họ và
+                        tên
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày
+                        sinh
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Địa chỉ
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số điện
+                        thoại
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kinh
+                        nghiệm làm việc
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tuyển
+                        dụng
+                    </th>
+                </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                <tr th:each="candidate: ${candidatePage}" class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap" th:text="${candidate.id}"></td>
+                    <td class="px-6 py-4 whitespace-nowrap" th:text="${candidate.fullName}"></td>
+                    <td class="px-6 py-4 whitespace-nowrap" th:text="${candidate.dob}"></td>
+                    <td class="px-6 py-4 whitespace-nowrap" th:text="${candidate.address.getCity()}"></td>
+                    <td class="px-6 py-4 whitespace-nowrap" th:text="${candidate.phone}"></td>
+                    <td class="px-6 py-4 whitespace-nowrap" th:text="${candidate.email}"></td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <button th:onclick="'handleSeeMoreExperiences(' + ${candidate.id} + ')'"
+                                class="text-blue-600 hover:text-blue-900 font-medium">
+                            Xem chi tiết
+                        </button>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <button th:onclick="'handleInviteCandidate('+${candidate.id}+','+${jobId}+')'"
+                                class="text-green-600 hover:text-green-900 font-medium">
+                            Gửi lời mời
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-center space-x-1 mt-4" th:if="${candidatePage.totalPages > 0}">
+            <div th:each="pageNumber : ${pageNumbers}" class="inline-flex">
+                <a th:href="@{/company/find-candidates/page(size=${candidatePage.size}, page=${pageNumber}, jobId=${jobId})}"
+                   th:text="${pageNumber}"
+                   th:class="${pageNumber==candidatePage.number + 1} ? 'px-4 py-2 text-white bg-blue-600 rounded-md' : 'px-4 py-2 text-gray-700 bg-white rounded-md hover:bg-gray-100'"
+                   class="transition-colors duration-200">
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Container -->
+<div id="container"></div>
+
+<script>
+    async function fetchGetExperiences(candidateId) {
+        try {
+            const response = await fetch(`/company/get-experiences?candidateId=${candidateId}`);
+            if (!response.ok) return [];
+            const data = await response.json();
+            return data || [];
+        } catch (error) {
+            console.error('Error fetching experiences:', error);
+            return [];
+        }
+    }
+
+    function closeModal() {
+        document.getElementById("container").innerHTML = "";
+    }
+
+    async function handleSeeMoreExperiences(candidateId) {
+        const elementContainer = document.getElementById("container");
+        if (!elementContainer) return;
+
+        const experiences = await fetchGetExperiences(candidateId);
+        if (!experiences) return;
+
+        elementContainer.innerHTML = `
+                <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="modalShowMoreExperience">
+                    <div class="relative top-20 mx-auto p-5 border w-4/5 shadow-lg rounded-md bg-white">
+                        <div class="flex flex-col">
+                            <!-- Header -->
+                            <div class="flex justify-between items-center pb-3 border-b">
+                                <h3 class="text-xl font-semibold text-gray-900">Kinh nghiệm làm việc</h3>
+                                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-500">
+                                    <span class="text-2xl">&times;</span>
+                                </button>
+                            </div>
+
+                            <!-- Body -->
+                            <div class="mt-4">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company Name</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">From Date</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To Date</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Work Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        ${experiences.map(exp => `
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-6 py-4 whitespace-nowrap">${exp.companyName}</td>
+                                                <td class="px-6 py-4 whitespace-nowrap">${exp.role}</td>
+                                                <td class="px-6 py-4 whitespace-nowrap">${exp.fromDate}</td>
+                                                <td class="px-6 py-4 whitespace-nowrap">${exp.toDate}</td>
+                                                <td class="px-6 py-4">${exp.workDescription}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="mt-4 flex justify-end">
+                                <button onclick="closeModal()"
+                                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors duration-200">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+    }
+
+    async function handleInviteCandidate(candidateId, jobId) {
+        try {
+            const response = await fetch(`/company/invite-candidate?candidateId=${candidateId}&jobId=${jobId}`);
+            if (response.ok) {
+                const data = await response.json();
+                alert(data.status);
+            } else {
+                alert("Invite failed.");
+            }
+        } catch (error) {
+            console.error('Error inviting candidate:', error);
+            alert("An error occurred while sending the invitation.");
+        }
+    }
+</script>
+</body>
+</html>

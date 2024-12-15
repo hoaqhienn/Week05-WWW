@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Job Board - Tìm Việc Làm</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<!-- Navbar -->
+<nav class="bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between h-16">
+            <div class="flex">
+                <a href="/candidate" class="flex-shrink-0 flex items-center">
+                    <span class="text-white text-xl font-bold">JobBoard</span>
+                </a>
+                <div class="hidden md:flex md:items-center md:ml-6">
+                    <a href="/candidate" class="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Trang
+                        chủ</a>
+                    <a href="/candidate/find-job"
+                       class="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Tìm Việc</a>
+                    <button data-modal-target="addSkillModal"
+                            class="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Tạo kỹ năng
+                    </button>
+                    <button data-modal-target="addCandidateSkill"
+                            class="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Thêm kỹ năng
+                    </button>
+                    <button data-modal-target="addExperienceModal"
+                            class="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">Thêm kinh
+                        nghiệm
+                    </button>
+                </div>
+            </div>
+            <div class="flex items-center">
+                <a href="#" class="text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                    <span class="mr-2">Đăng xuất</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="max-w-7xl mx-auto px-4 py-6">
+    <!-- Alerts -->
+    <div th:if="${message}" class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-4" role="alert">
+        <p class="font-bold">Info</p>
+        <p th:text="${message}"></p>
+    </div>
+    <div th:if="${error}" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+        <p class="font-bold">Warning</p>
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- Profile Info -->
+    <div th:if="${candidate}" class="bg-white shadow rounded-lg p-6 mb-6">
+        <div class="grid grid-cols-2 gap-4">
+            <div class="flex">
+                <span class="w-32 font-medium">Họ và tên:</span>
+                <span th:text="${candidate.fullName}"></span>
+            </div>
+            <div class="flex">
+                <span class="w-32 font-medium">Email:</span>
+                <span th:text="${candidate.email}"></span>
+            </div>
+            <div class="flex">
+                <span class="w-32 font-medium">Số điện thoại:</span>
+                <span th:text="${candidate.phone}"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills Table -->
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">Kỹ năng của bạn</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kỹ năng
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mô tả
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loại kỹ
+                        năng
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cấp độ
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thông tin
+                        khác
+                    </th>
+                </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                <tr th:each="skill: ${skills}">
+                    <td class="px-6 py-4 whitespace-nowrap" th:text="${skill.getSkill().getSkillName()}"></td>
+                    <td class="px-6 py-4" th:text="${skill.getSkill().getSkillDescription()}"></td>
+                    <td class="px-6 py-4 whitespace-nowrap" th:text="${skill.getSkill().getType()}"></td>
+                    <td class="px-6 py-4 whitespace-nowrap" th:text="${skill.getSkillLevel()}"></td>
+                    <td class="px-6 py-4" th:text="${skill.getMoreInfos()}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Experience Table -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-xl font-semibold mb-4">Kinh nghiệm làm việc</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên công
+                        ty
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vai trò
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Từ</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Đến</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mô tả
+                    </th>
+                </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                <tr th:each="experience: ${experiences}">
+                    <td class="px-6 py-4 whitespace-nowrap" th:text="${experience.getCompanyName()}"></td>
+                    <td class="px-6 py-4 whitespace-nowrap" th:text="${experience.getRole()}"></td>
+                    <td class="px-6 py-4 whitespace-nowrap" th:text="${experience.getFromDate()}"></td>
+                    <td class="px-6 py-4 whitespace-nowrap" th:text="${experience.getToDate()}"></td>
+                    <td class="px-6 py-4" th:text="${experience.getWorkDescription()}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Templates -->
+<!-- Add Skill Modal -->
+<div id="addSkillModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="flex justify-between items-center pb-3">
+            <h3 class="text-xl font-semibold">Tạo kỹ năng</h3>
+            <button class="modal-close text-gray-400 hover:text-gray-500">&times;</button>
+        </div>
+        <form action="/skills/add" method="post">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Kỹ năng:</label>
+                    <input type="text" name="skillName" required
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Mô tả:</label>
+                    <textarea name="skillDescription" rows="3"
+                              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Loại kỹ năng:</label>
+                    <select name="type" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="SOFT_SKILL">Soft Skill</option>
+                        <option value="TECHNICAL_SKILL">Technical Skill</option>
+                        <option value="UNSPECIFIC">Unspecified</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end mt-4 space-x-3">
+                <button type="button"
+                        class="modal-close px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Hủy
+                </button>
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Lưu</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add Experience Modal -->
+<div id="addExperienceModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="flex justify-between items-center pb-3">
+            <h3 class="text-xl font-semibold">Thêm kinh nghiệm</h3>
+            <button class="modal-close text-gray-400 hover:text-gray-500">&times;</button>
+        </div>
+        <form action="/candidate/add-experience" method="post">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Công ty:</label>
+                    <input type="text" name="companyName" required
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Vai trò:</label>
+                    <input type="text" name="role" required
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Từ ngày:</label>
+                    <input type="date" name="fromDate" required
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Đến ngày:</label>
+                    <input type="date" name="toDate"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Mô tả:</label>
+                    <textarea name="workDescription" rows="3"
+                              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end mt-4 space-x-3">
+                <button type="button"
+                        class="modal-close px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Hủy
+                </button>
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Lưu</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add Candidate Skill Modal -->
+<div id="addCandidateSkill" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="flex justify-between items-center pb-3">
+            <h3 class="text-xl font-semibold">Thêm kỹ năng</h3>
+            <button class="modal-close text-gray-400 hover:text-gray-500">&times;</button>
+        </div>
+        <form action="/candidate/add-skill" method="post">
+            <div class="space-y-4">
+                <!-- Skill Search and Select -->
+                <div>
+                    <div class="flex space-x-2">
+                        <input type="text" placeholder="Tìm kiếm kỹ năng"
+                               class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                               onchange="handleChangeTextSkill(event, 'modalCandidateSkillName', 'modalCandidateSkillDescription', 'modalCandidateSkillType')">
+                        <select id="modalCandidateSkillName" name="candidateSkillId" required
+                                class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                onchange="handleShowSkillDescription(event, 'modalCandidateSkillDescription', 'modalCandidateSkillType')">
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Skill Description -->
+                <div>
+                        <textarea id="modalCandidateSkillDescription" rows="2" disabled
+                                  class="w-full rounded-md border-gray-300 bg-gray-50"></textarea>
+                </div>
+
+                <!-- Skill Type -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Loại kỹ năng:</label>
+                    <select id="modalCandidateSkillType" disabled
+                            class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50">
+                        <option value="SOFT_SKILL">Soft Skill</option>
+                        <option value="TECHNICAL_SKILL">Technical Skill</option>
+                        <option value="UNSPECIFIC">Unspecified</option>
+                    </select>
+                </div>
+
+                <!-- Skill Level -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Level:</label>
+                    <select name="skillLevel" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="BEGINER">Beginner</option>
+                        <option value="IMTERMEDIATE">Intermediate</option>
+                        <option value="ADVANCED">Advanced</option>
+                        <option value="PROFESSIONAL">Professional</option>
+                        <option value="MASTER">Master</option>
+                    </select>
+                </div>
+
+                <!-- More Information -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Thông tin khác:</label>
+                    <textarea name="moreInfo" rows="3"
+                              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end mt-4 space-x-3">
+                <button type="button"
+                        class="modal-close px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Hủy
+                </button>
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Lưu</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    // Modal handling
+    document.addEventListener('DOMContentLoaded', function () {
+        // Modal open buttons
+        document.querySelectorAll('[data-modal-target]').forEach(button => {
+            button.addEventListener('click', () => {
+                const modal = document.getElementById(button.dataset.modalTarget);
+                modal.classList.remove('hidden');
+            });
+        });
+
+        // Modal close buttons
+        document.querySelectorAll('.modal-close').forEach(button => {
+            button.addEventListener('click', () => {
+                const modal = button.closest('[id]');
+                modal.classList.add('hidden');
+            });
+        });
+
+        // Close modal when clicking outside
+        document.querySelectorAll('[id$="Modal"]').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+        });
+    });
+
+    // Existing JavaScript functions
+    async function fetchSkills(name) {
+        try {
+            const response = await fetch('/api/skills?name=' + name);
+            if (!response.ok) {
+                return [];
+            }
+            const data = await response.json();
+            return data;
+        } catch (e) {
+            return []
+        }
+    }
+
+    async function handleChangeTextSkill(event, idSelect, idArea, elementIdSkillType) {
+        const elementSelect = document.getElementById(idSelect)
+        const elementArea = document.getElementById(idArea)
+        if (elementSelect) {
+            elementSelect.innerHTML = "";
+            const textSearch = event.target.value;
+            const data = await fetchSkills(textSearch)
+            data.skills.forEach((skill, index) => {
+                if (index === 0) {
+                    elementArea.value = skill.skillDescription
+                    if (elementIdSkillType) {
+                        const elementSelectSkillType = document.getElementById(elementIdSkillType);
+                        if (elementSelectSkillType) {
+                            elementSelectSkillType.value = skill.type
+                        }
+                    }
+                }
+
+                const elementSkill = document.createElement("option")
+                elementSkill.text = skill.skillName;
+                elementSkill.value = skill.id;
+                elementSkill.dataset.description = skill.skillDescription;
+                elementSkill.dataset.skillType = skill.type;
+                elementSelect.appendChild(elementSkill)
+            })
+            elementSelect.focus()
+        }
+    }
+
+    function handleShowSkillDescription(event, elementIdShowDescription, elementIdSkillType) {
+        const elementShowSkillDescription = document.getElementById(elementIdShowDescription)
+        const selectedOption = event.target.options[event.target.selectedIndex];
+        if (elementShowSkillDescription) {
+            elementShowSkillDescription.value = selectedOption.dataset.description;
+        }
+        if (elementIdSkillType) {
+            const elementSelectSkillType = document.getElementById(elementIdSkillType);
+            if (elementSelectSkillType) {
+                elementSelectSkillType.value = selectedOption.dataset.skillType
+            }
+        }
+    }
+</script>
+</body>
+</html>

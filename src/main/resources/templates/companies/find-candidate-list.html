@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Candidates</title>
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-
+T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous">
+    <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-
+C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        div.inline {
+            color: black;
+            float: left;
+            padding: 5px 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        div.inline a.active {
+            background-color: #FBD603;
+            border: 1px solid darkred;
+        }
+    </style>
+</head>
+<body>
+<div th:switch="${candidates}">
+    <h2 th:case="null">No candidates yet!</h2>
+    <div th:case="*" style="width: 90%; margin-left: 5%">
+        <h2>Candidates</h2>
+        <a href="/">&#8678; Back</a>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>dob</th>
+                <th>address</th>
+                <th>phone</th>
+                <th>email</th>
+                <th>More experiences</th>
+                <th>Send Email</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="candidate : ${candidates}">
+                <td th:text="${candidate.id}"></td>
+                <td th:text="${candidate.fullName}"></td>
+                <td th:text="${candidate.dob}"></td>
+                <td th:text="${candidate.address.getCity()}"></td>
+                <td th:text="${candidate.phone}"></td>
+                <td th:text="${candidate.email}"></td>
+                <td>
+                    <button class="btn btn-default" th:onclick="'handleSeeMoreExperiences(' + ${candidate.id} + ')'">
+                        See
+                    </button>
+                </td>
+                <td>
+                    <button class="btn btn-default"
+                            th:onclick="'handleInviteCandidate('+${candidate.id}+','+${jobId}+')'">Send to
+                    </button>
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+    <div id="container"></div>
+
+</div>
+<script>
+    async function fetchGetExperiences(candidateId) {
+        const response = await fetch(`/company/get-experiences?candidateId=${candidateId}`);
+        if (!response.ok) {
+            return [];
+        }
+        const data = await response.json()
+        if (data) {
+            return data;
+        }
+        return [];
+    }
+
+    function closeModal() {
+        document.getElementById("container").innerHTML = ""
+    }
+
+    async function handleSeeMoreExperiences(candidateId) {
+        const elementContainer = document.getElementById("container")
+        if (elementContainer) {
+            const experiences = await fetchGetExperiences(candidateId)
+            if (experiences) {
+
+                elementContainer.innerHTML = `
+                <!-- Modal -->
+                <div class="modal fade in" id="modalShowMoreExperience" role="dialog" style="display: block; padding-left: 17px;">
+                    <div class="modal-dialog  modal-lg">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" style="flex: 1; text-align: center">More Experience</h4>
+                                <button type="button" class="close" data-dismiss="modal" onclick="closeModal()">&times;</button>
+
+                            </div>
+                            <div class="modal-body">
+                                <table style="width: 100%" class="table table-hover">
+                                    <tr>
+                                        <th>Company Name</th>
+                                        <th>Role</th>
+                                        <th>From Date</th>
+                                        <th>To Date</th>
+                                        <th>Word Description</th>
+                                    </tr>
+                                    <tbody>
+                                        ${experiences.map(exp => `
+                                            <tr>
+                                                <td>${exp.companyName}</td>
+                                                <td>${exp.role}</td>
+                                                <td>${exp.fromDate}</td>
+                                                <td>${exp.toDate}</td>
+                                                <td>${exp.workDescription}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" onclick="closeModal()">Close</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                `
+
+            }
+        }
+    }
+
+    async function handleInviteCandidate(candidateId, jobId) {
+        const response = await fetch(`/company/invite-candidate?candidateId=${candidateId}&jobId=${jobId}`)
+        if (response.ok) {
+            const data = await response.json()
+            alert(data.status)
+        } else {
+            alert("Invite fail.")
+        }
+    }
+
+</script>
+</body>
+</html>

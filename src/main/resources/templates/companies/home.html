@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Job Board - Tìm Ứng Viên</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<!-- Navbar -->
+<nav class="bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <div class="hidden md:block">
+                    <div class="flex items-baseline space-x-4">
+                        <a href="/company" class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">Trang
+                            chủ</a>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center">
+                <a href="#" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                    <span class="mr-2">Đăng xuất</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="min-h-screen">
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Sidebar and Main Content -->
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- Sidebar -->
+            <div class="md:w-64 flex flex-col gap-4 p-4 bg-white rounded-lg shadow">
+                <button data-modal-target="addSkillModal"
+                        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition duration-200">
+                    Thêm kỹ năng
+                </button>
+                <button data-modal-target="addJobModal"
+                        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition duration-200">
+                    Thêm công việc
+                </button>
+            </div>
+
+            <!-- Main Content -->
+            <div class="flex-1">
+                <!-- Alerts -->
+                <div th:if="${message}" class="mb-4 p-4 bg-blue-100 border-l-4 border-blue-500 text-blue-700">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="font-bold">Info!</p>
+                            <p th:text="${message}"></p>
+                        </div>
+                        <button class="closebtn">&times;</button>
+                    </div>
+                </div>
+
+                <div th:if="${error}" class="mb-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="font-bold">Warning!</p>
+                            <p th:text="${error}"></p>
+                        </div>
+                        <button class="closebtn">&times;</button>
+                    </div>
+                </div>
+
+                <!-- Company Info -->
+                <div th:if="${company}" class="bg-white rounded-lg shadow mb-6 p-6">
+                    <div class="space-y-4">
+                        <div class="flex">
+                            <span class="w-32 font-medium">Tên công ty:</span>
+                            <span th:text="${company.getName()}"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="w-32 font-medium">Mô tả:</span>
+                            <span th:text="${company.getAbout()}"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="w-32 font-medium">Website:</span>
+                            <span th:text="${company.getWebUrl()}"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="w-32 font-medium">Email:</span>
+                            <span th:text="${company.getEmail()}"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="w-32 font-medium">Số điện thoại:</span>
+                            <span th:text="${company.getPhone()}"></span>
+                        </div>
+                        <div class="flex">
+                            <span class="w-32 font-medium">Địa chỉ:</span>
+                            <span th:text="${company.getAddress()}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jobs Table -->
+                <div th:if="${jobs}" class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-xl font-semibold text-gray-800">Danh sách công việc tuyển dụng</h2>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                            <tr>
+                                <th rowspan="2"
+                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Vị trí
+                                </th>
+                                <th rowspan="2"
+                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Mô tả
+                                </th>
+                                <th colspan="4"
+                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Kỹ năng
+                                </th>
+                                <th rowspan="2"
+                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Tìm ứng viên phù hợp
+                                </th>
+                                <th rowspan="2"
+                                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Trạng thái
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Tên kỹ năng
+                                </th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Mô tả
+                                </th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Cấp độ
+                                </th>
+                                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Thông tin khác
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" th:each="job : ${jobs}">
+                            <tr>
+                                <td th:rowspan="${#lists.size(job.jobSkills) +1}" class="px-6 py-4 whitespace-nowrap"
+                                    th:text="${job.getJobName()}"></td>
+                                <td th:rowspan="${#lists.size(job.jobSkills) +1}" class="px-6 py-4"
+                                    th:text="${job.getJobDesc()}"></td>
+                                <td th:if="${#lists.size(job.jobSkills) > 0}" class="px-6 py-4 whitespace-nowrap"
+                                    th:text="${job.jobSkills[0].skill.skillName}"></td>
+                                <td th:if="${#lists.size(job.jobSkills) > 0}" class="px-6 py-4"
+                                    th:text="${job.jobSkills[0].skill.skillDescription}"></td>
+                                <td th:if="${#lists.size(job.jobSkills) > 0}" class="px-6 py-4 whitespace-nowrap"
+                                    th:text="${job.jobSkills[0].getSkillLevel()}"></td>
+                                <td th:if="${#lists.size(job.jobSkills) > 0}" class="px-6 py-4"
+                                    th:text="${job.jobSkills[0].moreInfos}"></td>
+                                <td th:rowspan="${#lists.size(job.jobSkills) +1}"
+                                    class="px-6 py-4 whitespace-nowrap text-center"
+                                    th:if="${#lists.size(job.jobSkills) > 0}">
+                                    <a th:if="${job.getStatus().name().equals('OPEN')}"
+                                       th:href="@{/company/find-candidates/page(jobId=${job.id})}"
+                                       class="text-blue-600 hover:text-blue-900">Tìm ứng viên</a>
+                                </td>
+                                <td th:rowspan="${#lists.size(job.jobSkills) +1}"
+                                    class="px-6 py-4 whitespace-nowrap text-center">
+                                    <a th:if="${job.getStatus().name().equals('OPEN')}"
+                                       th:href="@{/company/status-job(jobId=${job.id},status='CLOSE')}"
+                                       class="text-red-600 hover:text-red-900">Đóng</a>
+                                    <a th:if="${job.getStatus().name().equals('CLOSE')}"
+                                       th:href="@{/company/status-job(jobId=${job.id},status='OPEN')}"
+                                       class="text-green-600 hover:text-green-900">Mở</a>
+                                </td>
+                            </tr>
+                            <!-- Additional skills rows -->
+                            <tr th:each="skill, iterStat : ${job.jobSkills}" th:if="${iterStat.index > 0}"
+                                class="bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap" th:text="${skill.skill.skillName}"></td>
+                                <td class="px-6 py-4" th:text="${skill.skill.skillDescription}"></td>
+                                <td class="px-6 py-4 whitespace-nowrap" th:text="${skill.getSkillLevel().name()}"></td>
+                                <td class="px-6 py-4" th:text="${skill.moreInfos}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Job Modal -->
+<div id="addJobModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-xl shadow-lg rounded-md bg-white">
+        <div class="flex justify-between items-center pb-3">
+            <h3 class="text-xl font-semibold">Thêm công việc</h3>
+            <button class="modal-close text-gray-400 hover:text-gray-500">&times;</button>
+        </div>
+        <form id="addJobForm" action="/company/add-job" method="post" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Vị trí</label>
+                <input type="text" name="jobName" required
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Mô tả</label>
+                <textarea name="jobDescription" rows="3" required
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+            </div>
+
+            <div id="jobSkillsContainer" class="space-y-4">
+                <div class="space-y-4">
+                    <div class="grid grid-cols-12 gap-4">
+                        <div class="col-span-6 flex space-x-2">
+                            <input placeholder="Tìm kỹ năng"
+                                   class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                   onchange="handleChangeTextSkill(event, 'select-skill-0', 'skillDescription0')">
+                            <select id="select-skill-0" name="skills[0].id" required
+                                    class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    onchange="handleShowSkillDescription(event, 'skillDescription0')">
+                            </select>
+                        </div>
+                        <div class="col-span-4">
+                            <select name="skills[0].skillLevel" required
+                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="">Lựa chọn cấp độ</option>
+                                <option value="MASTER">Master</option>
+                                <option value="BEGINER">Beginner</option>
+                                <option value="ADVANCED">Advanced</option>
+                                <option value="PROFESSIONAL">Professional</option>
+                                <option value="IMTERMEDIATE">Intermediate</option>
+                            </select>
+                        </div>
+                        <div class="col-span-2">
+                            <button type="button"
+                                    class="add-skill-btn w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                                +
+                            </button>
+                        </div>
+                    </div>
+                    <textarea id="skillDescription0" rows="2" disabled
+                              class="w-full rounded-md border-gray-300 bg-gray-50"></textarea>
+                    <textarea name="skills[0].moreInfos" rows="2" required placeholder="Mô tả chi tiết kỹ năng"
+                              class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Lưu
+                </button>
+                <button type="button"
+                        class="modal-close px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Hủy
+                </button>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Add Skill Modal -->
+<div id="addSkillModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="flex justify-between items-center pb-3">
+            <h3 class="text-xl font-semibold">Thêm kỹ năng</h3>
+            <button class="modal-close text-gray-400 hover:text-gray-500">&times;</button>
+        </div>
+        <form action="/skills/add" method="post" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Kỹ năng:</label>
+                <input type="text" name="skillName" required
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Mô tả:</label>
+                <textarea name="skillDescription" rows="3"
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Loại:</label>
+                <select name="type" required
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <option value="SOFT_SKILL">Soft Skill</option>
+                    <option value="TECHNICAL_SKILL">Technical Skill</option>
+                    <option value="UNSPECIFIC">Unspecified</option>
+                </select>
+            </div>
+
+            <div class="flex justify-end space-x-3">
+                <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">Lưu
+                </button>
+                <button type="button"
+                        class="modal-close px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Hủy
+                </button>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Alert close functionality
+    document.querySelectorAll('.closebtn').forEach(button => {
+        button.addEventListener('click', function () {
+            const alert = this.closest('div[class*="bg-"][class*="-100"]');
+            alert.style.opacity = '0';
+            setTimeout(() => alert.style.display = 'none', 600);
+        });
+    });
+
+    // Modal functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        // Modal open buttons
+        document.querySelectorAll('[data-modal-target]').forEach(button => {
+            button.addEventListener('click', () => {
+                const modal = document.getElementById(button.dataset.modalTarget);
+                modal.classList.remove('hidden');
+            });
+        });
+
+        // Modal close buttons
+        document.querySelectorAll('.modal-close').forEach(button => {
+            button.addEventListener('click', () => {
+                const modal = button.closest('[id$="Modal"]');
+                modal.classList.add('hidden');
+            });
+        });
+
+        // Close modal when clicking outside
+        document.querySelectorAll('[id$="Modal"]').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+        });
+    });
+
+    // Add skill row functionality
+    document.querySelector('.add-skill-btn').addEventListener('click', function () {
+        const container = document.getElementById('jobSkillsContainer');
+        const index = container.children.length;
+
+        const skillDiv = document.createElement('div');
+        skillDiv.className = 'space-y-4';
+
+        skillDiv.innerHTML = `
+                <div class="grid grid-cols-12 gap-4">
+                    <div class="col-span-6 flex space-x-2">
+                        <input placeholder="Search skill"
+                               class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                               onchange="handleChangeTextSkill(event, 'select-skill-${index}', 'skillDescription${index}')">
+                        <select id="select-skill-${index}" name="skills[${index}].id" required
+                                class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                onchange="handleShowSkillDescription(event, 'skillDescription${index}')">
+                        </select>
+                    </div>
+                    <div class="col-span-4">
+                        <select name="skills[${index}].skillLevel" required
+                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Select Skill Level</option>
+                            <option value="MASTER">Master</option>
+                            <option value="BEGINER">Beginner</option>
+                            <option value="ADVANCED">Advanced</option>
+                            <option value="PROFESSIONAL">Professional</option>
+                            <option value="IMTERMEDIATE">Intermediate</option>
+                        </select>
+                    </div>
+                    <div class="col-span-2">
+                        <button type="button"
+                                class="remove-skill-btn w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                            -
+                        </button>
+                    </div>
+                </div>
+                <textarea id="skillDescription${index}" rows="2" disabled
+                          class="w-full rounded-md border-gray-300 bg-gray-50"></textarea>
+                <textarea name="skills[${index}].moreInfos" rows="2" required placeholder="Enter skill more info"
+                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+            `;
+
+        container.appendChild(skillDiv);
+
+        // Remove skill row
+        skillDiv.querySelector('.remove-skill-btn').addEventListener('click', function () {
+            skillDiv.remove();
+        });
+    });
+
+    async function fetchSkills(name) {
+        try {
+            const response = await fetch('/api/skills?name=' + name);
+            if (!response.ok) {
+                return {skills: []};
+            }
+            return await response.json();
+        } catch (e) {
+            return {skills: []};
+        }
+    }
+
+    async function handleChangeTextSkill(event, idSelect, idArea) {
+        const elementSelect = document.getElementById(idSelect);
+        const elementArea = document.getElementById(idArea);
+
+        if (elementSelect) {
+            elementSelect.innerHTML = '';
+            const data = await fetchSkills(event.target.value);
+
+            data.skills.forEach((skill, index) => {
+                if (index === 0 && elementArea) {
+                    elementArea.value = skill.skillDescription;
+                }
+
+                const option = document.createElement('option');
+                option.text = skill.skillName;
+                option.value = skill.id;
+                option.dataset.description = skill.skillDescription;
+                elementSelect.appendChild(option);
+            });
+
+            elementSelect.focus();
+        }
+    }
+
+    function handleShowSkillDescription(event, elementIdShowDescription) {
+        const elementShowSkillDescription = document.getElementById(elementIdShowDescription);
+        if (elementShowSkillDescription) {
+            const selectedOption = event.target.options[event.target.selectedIndex];
+            elementShowSkillDescription.value = selectedOption.dataset.description;
+        }
+    }
+</script>
+</body>
+</html>

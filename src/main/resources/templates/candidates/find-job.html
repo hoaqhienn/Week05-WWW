@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Board - Tìm Việc</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="container mx-auto px-4 py-8 w-[90%]">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Danh sách công việc đang tuyển</h1>
+        <a href="/" class="text-blue-600 hover:text-blue-800 flex items-center">
+            <span class="mr-2">&#8678;</span> Trở về
+        </a>
+    </div>
+
+    <div class="overflow-x-auto shadow-md rounded-lg">
+        <table class="w-full bg-white">
+            <thead>
+            <tr>
+                <th class="border px-4 py-2 bg-gray-50" rowspan="2">Công ty</th>
+                <th class="border px-4 py-2 bg-gray-50" rowspan="2">Vị trí</th>
+                <th class="border px-4 py-2 bg-gray-50" colspan="4">Kỹ năng</th>
+                <th class="border px-4 py-2 bg-gray-50" rowspan="2">Các kỹ năng cần cải thiện</th>
+            </tr>
+            <tr>
+                <th class="border px-4 py-2 bg-gray-50">Tên</th>
+                <th class="border px-4 py-2 bg-gray-50">Mô tả</th>
+                <th class="border px-4 py-2 bg-gray-50">Cấp độ</th>
+                <th class="border px-4 py-2 bg-gray-50">Thông tin khác</th>
+            </tr>
+            </thead>
+            <tbody th:each="entry :${suggestions}">
+            <tr class="hover:bg-gray-50">
+                <td th:rowspan="${#lists.size(entry.getKey().getJobSkills())+1}"
+                    th:text="${entry.getKey().getCompany().getName()}"
+                    class="border px-4 py-2 align-middle"></td>
+                <td th:rowspan="${#lists.size(entry.getKey().getJobSkills())+1}"
+                    th:text="${entry.getKey().getJobName()}"
+                    class="border px-4 py-2 align-middle"></td>
+                <td class="border px-4 py-2"
+                    th:text="${entry.getKey().getJobSkills().get(0).getSkill().getSkillName()}"></td>
+                <td class="border px-4 py-2"
+                    th:text="${entry.getKey().getJobSkills().get(0).getSkill().getSkillDescription()}"></td>
+                <td class="border px-4 py-2"
+                    th:text="${entry.getKey().getJobSkills().get(0).getSkillLevel().name()}"></td>
+                <td class="border px-4 py-2"
+                    th:text="${entry.getKey().getJobSkills().get(0).getMoreInfos()}"></td>
+                <td th:rowspan="${#lists.size(entry.getKey().getJobSkills())+1}"
+                    th:text="${entry.getValue()}"
+                    class="border px-4 py-2 align-middle"></td>
+            </tr>
+            <tr th:each="jobSkill, iterSart: ${entry.getKey().getJobSkills()}"
+                class="hover:bg-gray-50">
+                <td th:if="${iterSart.index} > 0"
+                    th:text="${jobSkill.getSkill().getSkillName()}"
+                    class="border px-4 py-2"></td>
+                <td th:if="${iterSart.index} > 0"
+                    th:text="${jobSkill.getSkill().getSkillDescription()}"
+                    class="border px-4 py-2"></td>
+                <td th:if="${iterSart.index} > 0"
+                    th:text="${jobSkill.getSkillLevel().name()}"
+                    class="border px-4 py-2"></td>
+                <td th:if="${iterSart.index} > 0"
+                    th:text="${jobSkill.getMoreInfos()}"
+                    class="border px-4 py-2"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
