@@ -13,15 +13,17 @@ import java.util.Optional;
 public class JobService {
     @Autowired
     private JobRepository jobRepository;
+
     public List<Job> findByCompanyId(long companyId) {
-        return  jobRepository.findJobsByCompany_Id(companyId);
+        return jobRepository.findJobsByCompany_Id(companyId);
     }
+
     public Job save(Job job) {
         return jobRepository.save(job);
     }
 
     public void close(long jobId, StatusPostJob status) {
-        jobRepository.updateStatusById(status,jobId);
+        jobRepository.updateStatusById(status, jobId);
     }
 
     public Optional<Job> findById(Long jobId) {
@@ -30,5 +32,9 @@ public class JobService {
 
     public List<Job> suggestJob(Long candidateId) {
         return jobRepository.suggestJobByCandidateId(candidateId);
+    }
+
+    public List<Job> findByStatus(StatusPostJob status) {
+        return jobRepository.findByStatus(status);
     }
 }

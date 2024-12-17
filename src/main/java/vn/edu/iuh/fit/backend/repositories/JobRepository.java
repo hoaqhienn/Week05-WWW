@@ -21,4 +21,8 @@ public interface JobRepository extends JpaRepository<Job, Long> {
 
     @Query("SELECT DISTINCT j FROM Candidate c JOIN c.candidateSkills cs JOIN cs.skill s JOIN s.jobSkills js JOIN js.job j WHERE c.id = ?1 AND j.status != 0")
     List<Job> suggestJobByCandidateId(Long candidateId);
+
+    List<Job> findByStatus(StatusPostJob status);
 }
+
+
