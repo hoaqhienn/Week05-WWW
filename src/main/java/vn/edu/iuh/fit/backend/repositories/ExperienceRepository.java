@@ -13,6 +13,7 @@ import java.util.Optional;
 @Repository
 public interface ExperienceRepository extends JpaRepository<Experience, Long> {
     List<Experience> findByCandidate_Id(long id);
-    @Query("SELECT e FROM Experience e WHERE :to >= e.fromDate and :to <= e.toDate OR :from >= e.fromDate AND :from <= e.toDate OR :from <= e.fromDate AND :to >= e.toDate")
+    @Query("SELECT e FROM Experience e WHERE :to >= e.fromDate and :to <= e.toDate" +
+            " OR :from >= e.fromDate AND :from <= e.toDate OR :from <= e.fromDate AND :to >= e.toDate")
     Optional<Experience> findExperienceOverlap(@Param("to") LocalDate to, @Param("from") LocalDate from);
 }

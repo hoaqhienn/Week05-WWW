@@ -3,7 +3,6 @@ package vn.edu.iuh.fit.backend.models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import vn.edu.iuh.fit.backend.enums.StatusPostJob;
 
 import java.util.List;

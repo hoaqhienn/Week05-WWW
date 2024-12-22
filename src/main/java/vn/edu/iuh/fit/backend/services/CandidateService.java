@@ -7,10 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import vn.edu.iuh.fit.backend.models.Candidate;
-import vn.edu.iuh.fit.backend.models.Experience;
 import vn.edu.iuh.fit.backend.repositories.CandidateRepository;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,13 +26,10 @@ public class CandidateService {
         return candidateRepository.findByEmail(email);
     }
 
-    public void deleteById(Long id) {
-        candidateRepository.deleteById(id);
-    }
-
     public List<Candidate> findAll() {
         return candidateRepository.findAll();
     }
+
     public Page<Candidate> findAll(int pageNo, int pageSize, String sortBy, String sortDirection) {
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
@@ -42,12 +37,14 @@ public class CandidateService {
         candidates.forEach(candidate -> System.out.println(candidate.getEmail()));
         return candidates;
     }
+
     public List<Candidate> findCandidatesByJobIdAndSkills(long jobId) {
         return candidateRepository.findCandidatesByJobIdAndSkills(jobId);
     }
-    public Page<Candidate> findCandidatesByJobIdAndSkills( long jobId, int pageCurrent, int pageSize,String sortBy, String sortDirection) {
+
+    public Page<Candidate> findCandidatesByJobIdAndSkills(long jobId, int pageCurrent, int pageSize, String sortBy, String sortDirection) {
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
-        Pageable pageable = PageRequest.of(pageCurrent-1, pageSize,sort);
+        Pageable pageable = PageRequest.of(pageCurrent - 1, pageSize, sort);
         Page<Candidate> candidates = candidateRepository.findCandidatesByJobIdAndSkills(jobId, pageable);
         candidates.forEach(candidate -> System.out.println(candidate.getEmail()));
         return candidates;

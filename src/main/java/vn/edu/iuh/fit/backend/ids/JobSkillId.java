@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -13,6 +14,7 @@ import java.util.Objects;
 @Setter
 @Embeddable
 public class JobSkillId implements Serializable {
+    @Serial
     private static final long serialVersionUID = -3312327139641313709L;
     @Column(name = "job_id", nullable = false)
     private Long jobId;

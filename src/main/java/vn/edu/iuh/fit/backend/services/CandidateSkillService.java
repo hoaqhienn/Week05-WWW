@@ -7,11 +7,11 @@ import vn.edu.iuh.fit.backend.repositories.CandidateSkillRepository;
 
 import java.util.List;
 
-
 @Service
 public class CandidateSkillService {
     @Autowired
     private CandidateSkillRepository candidateSkillRepository;
+
     public CandidateSkill save(CandidateSkill candidateSkill) {
         return candidateSkillRepository.save(candidateSkill);
     }

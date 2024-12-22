@@ -1,13 +1,9 @@
 package vn.edu.iuh.fit.backend.models;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import net.minidev.json.annotate.JsonIgnore;
 
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,7 +17,7 @@ public class Candidate {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "dob", nullable = true)
+    @Column(name = "dob")
     private LocalDate dob;
 
     @Column(name = "email", nullable = false)
@@ -30,7 +26,7 @@ public class Candidate {
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
-    @Column(name = "phone", nullable = true, length = 15)
+    @Column(name = "phone", length = 15)
     private String phone;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
@@ -54,6 +50,7 @@ public class Candidate {
         this.phone = phone;
         this.address = address;
     }
+
     public Candidate(String fullName, LocalDate dob, Address address, String phone, String email) {
         this.fullName = fullName;
         this.dob = dob;

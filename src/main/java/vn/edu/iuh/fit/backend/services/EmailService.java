@@ -1,18 +1,9 @@
 package vn.edu.iuh.fit.backend.services;
 
-import com.google.api.client.auth.oauth2.BearerToken;
-import com.google.api.client.auth.oauth2.Credential;
 import com.google.auth.oauth2.AccessToken;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizeRequest;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.gmail.Gmail;
@@ -25,9 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -35,21 +24,15 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import vn.edu.iuh.fit.backend.models.Company;
 import vn.edu.iuh.fit.backend.models.Job;
 import vn.edu.iuh.fit.backend.models.JobSkill;
 
 @Service
 @Slf4j
-// Add this if you're using Lombok, otherwise use private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 public class EmailService {
-    private final OAuth2AuthorizedClientManager authorizedClientManager;
 
     public EmailService(OAuth2AuthorizedClientManager authorizedClientManager) {
-        this.authorizedClientManager = authorizedClientManager;
     }
 
     public Message sendEmail(String fromEmailAddress, String toEmailAddress,
@@ -100,7 +83,6 @@ public class EmailService {
 
     public static String getHtmlTemplateInviteCandidate(String filePath, Job job) {
         try {
-            // Đọc tệp HTML vào chuỗi
             String content = new String(Files.readAllBytes(Paths.get(filePath)));
             // Thay thế các placeholder với giá trị thực tế từ đối tượng Job
             content = content.replace("{{companyName}}", job.getCompany().getName())

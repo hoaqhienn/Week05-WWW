@@ -1,6 +1,5 @@
 package vn.edu.iuh.fit.backend.services;
 
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.edu.iuh.fit.backend.models.Skill;
@@ -13,6 +12,7 @@ import java.util.Optional;
 public class SkillService {
     @Autowired
     private SkillRepository skillRepository;
+
     public Skill save(Skill skill) {
         return skillRepository.save(skill);
     }

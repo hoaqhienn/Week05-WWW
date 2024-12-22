@@ -31,14 +31,6 @@ public class Address {
     @Column(name = "zipcode", length = 7)
     private String zipcode;
 
-    public Address(String number, String street, String city, String zipcode, CountryCode country) {
-        this.number = number;
-        this.street = street;
-        this.city = city;
-        this.zipcode = zipcode;
-        this.country = country;
-    }
-
     @Override
     public String toString() {
         return number + " " + street + " " + city + " " + country + " [" + zipcode + "]";
